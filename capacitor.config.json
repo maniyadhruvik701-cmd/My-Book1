@@ -1,0 +1,7 @@
+{
+	"appId": "com.mybook.ledger",
+	"appName": "My Book",
+	"webDir": "www",
+	"bundledWebRuntime": false,
+	"packageClassList": []
+}

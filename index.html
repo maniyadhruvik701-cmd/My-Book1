@@ -1,0 +1,923 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Book - Digital Ledger & Udhar Jama</title>
+  <meta name="description" content="Manage your credit, debit, customers, and ledger balances seamlessly.">
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <!-- Remix Icon CDN -->
+  <link href="https://cdn.jsdelivr.net/npm/remixicon@4.2.0/fonts/remixicon.css" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- =========================================================================
+       LOGIN / SECURITY PIN LOCK SCREEN
+       ========================================================================= -->
+  <div class="pin-lock-overlay active" id="pinLockScreen">
+    <div class="pin-aurora-bg"></div>
+    <div class="pin-lock-card">
+      <div class="pin-lock-header">
+        <div class="pin-brand-icon">
+          <i class="ri-shield-keyhole-fill"></i>
+        </div>
+        <h2 class="pin-app-title">My Book</h2>
+        <p class="pin-app-subtitle">Digital Business Ledger</p>
+      </div>
+
+      <div class="pin-lock-body">
+        <p class="pin-instruction">Enter 4-Digit Security PIN</p>
+        
+        <!-- PIN Dots Indicator -->
+        <div class="pin-dots-container" id="pinDotsContainer">
+          <span class="pin-dot" data-index="0"></span>
+          <span class="pin-dot" data-index="1"></span>
+          <span class="pin-dot" data-index="2"></span>
+          <span class="pin-dot" data-index="3"></span>
+        </div>
+
+        <div class="pin-error-msg" id="pinErrorMsg"></div>
+
+        <!-- Hidden input for physical keyboard entry -->
+        <input type="password" id="pinHiddenInput" maxlength="4" inputmode="numeric" pattern="[0-9]*" autocomplete="off" autofocus aria-label="Enter 4-digit PIN">
+
+        <!-- Virtual Keypad (Touch & Mobile Friendly) -->
+        <div class="pin-keypad">
+          <button type="button" class="pin-key-btn" data-key="1"><span>1</span></button>
+          <button type="button" class="pin-key-btn" data-key="2"><span>2</span><small>ABC</small></button>
+          <button type="button" class="pin-key-btn" data-key="3"><span>3</span><small>DEF</small></button>
+          <button type="button" class="pin-key-btn" data-key="4"><span>4</span><small>GHI</small></button>
+          <button type="button" class="pin-key-btn" data-key="5"><span>5</span><small>JKL</small></button>
+          <button type="button" class="pin-key-btn" data-key="6"><span>6</span><small>MNO</small></button>
+          <button type="button" class="pin-key-btn" data-key="7"><span>7</span><small>PQRS</small></button>
+          <button type="button" class="pin-key-btn" data-key="8"><span>8</span><small>TUV</small></button>
+          <button type="button" class="pin-key-btn" data-key="9"><span>9</span><small>WXYZ</small></button>
+          <button type="button" class="pin-key-btn pin-key-action" id="pinClearBtn" title="Clear PIN"><span><i class="ri-close-line"></i></span></button>
+          <button type="button" class="pin-key-btn" data-key="0"><span>0</span></button>
+          <button type="button" class="pin-key-btn pin-key-action" id="pinBackspaceBtn" title="Backspace"><span><i class="ri-delete-back-2-line"></i></span></button>
+        </div>
+
+        <div class="pin-footer-hint">
+          <i class="ri-shield-check-line"></i> Protected &bull; Enter Security PIN to Unlock
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="app-layout">
+    <!-- Sidebar Navigation -->
+    <aside class="sidebar" id="sidebar">
+      <div class="brand">
+        <div class="brand-icon">
+          <i class="ri-book-3-fill"></i>
+        </div>
+        <div class="brand-text">
+          <h2>My Book</h2>
+          <span>Digital Business Ledger</span>
+        </div>
+      </div>
+
+      <div class="business-card">
+        <div class="business-avatar">
+          <i class="ri-store-2-line"></i>
+        </div>
+        <div class="business-info">
+          <span class="business-label">Business Account</span>
+          <strong id="businessNameDisplay">My Business</strong>
+        </div>
+        <button class="icon-btn-sm" id="editBusinessBtn" title="Edit Business Name">
+          <i class="ri-pencil-line"></i>
+        </button>
+      </div>
+
+      <nav class="nav-menu">
+        <a href="#" class="nav-item active" id="navDashboardBtn">
+          <i class="ri-dashboard-line"></i>
+          <span>Dashboard</span>
+        </a>
+        <a href="#customers" class="nav-item" id="navCustomersBtn">
+          <i class="ri-user-star-line"></i>
+          <span>Customers / Parties</span>
+          <span class="nav-badge" id="navCustomerCount">0</span>
+        </a>
+        <a href="#" class="nav-item" id="navReportBtn">
+          <i class="ri-file-chart-line"></i>
+          <span>Ledger Report</span>
+        </a>
+        <a href="#" class="nav-item" id="navBackupBtn">
+          <i class="ri-refresh-line"></i>
+          <span>Sync &amp; Backup</span>
+        </a>
+        <a href="#" class="nav-item" id="navLockBtn">
+          <i class="ri-lock-2-line"></i>
+          <span>Lock App</span>
+        </a>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="sync-status">
+          <span class="status-dot"></span>
+          <span>100% Offline & Auto-Saved</span>
+        </div>
+        <div class="security-badge">
+          <i class="ri-shield-check-fill"></i> Secure Data Storage
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="main-content">
+      <!-- Top Navigation Header -->
+      <header class="top-header" id="dashboardTopHeader">
+        <div class="header-left">
+          <button class="mobile-toggle" id="sidebarToggle" aria-label="Toggle Menu">
+            <i class="ri-menu-2-line"></i>
+          </button>
+          <div class="header-title-box">
+            <h1>Ledger Dashboard</h1>
+            <p id="headerDateDisplay">Today</p>
+          </div>
+        </div>
+
+        <div class="header-search">
+          <i class="ri-search-line"></i>
+          <input type="text" id="globalSearchInput" placeholder="Search customer by name or phone...">
+          <button class="clear-search-btn" id="clearSearchBtn" style="display:none;">
+            <i class="ri-close-line"></i>
+          </button>
+        </div>
+
+        <div class="header-actions">
+          <button class="btn btn-outline" id="lockAppHeaderBtn" title="Lock App with PIN">
+            <i class="ri-lock-2-line"></i>
+            <span>Lock</span>
+          </button>
+          <button class="btn btn-outline" id="downloadReportBtn" title="View & Print Ledger Report">
+            <i class="ri-file-download-line"></i>
+            <span>Report</span>
+          </button>
+          <button class="btn btn-primary" id="openAddCustomerFlowBtn">
+            <i class="ri-user-add-line"></i>
+            <span>Add Customer</span>
+          </button>
+        </div>
+      </header>
+
+      <!-- Dashboard View (Overview) -->
+      <div class="dashboard-body" id="dashboardView">
+        
+        <!-- Summary Cards Grid (You'll Get, You'll Give, Net Balance, Customers) -->
+        <section class="stats-grid">
+          <!-- Card 1: You'll Get -->
+          <div class="stat-card stat-receive">
+            <div class="stat-icon-wrap receive-icon">
+              <i class="ri-arrow-down-circle-fill"></i>
+            </div>
+            <div class="stat-details">
+              <span class="stat-title">YOU'LL GET</span>
+              <h2 class="stat-amount" id="totalReceiveDisplay">₹ 0</h2>
+              <span class="stat-sub"><i class="ri-checkbox-circle-fill"></i> To collect from customers</span>
+            </div>
+          </div>
+
+          <!-- Card 2: You'll Give -->
+          <div class="stat-card stat-pay">
+            <div class="stat-icon-wrap pay-icon">
+              <i class="ri-arrow-up-circle-fill"></i>
+            </div>
+            <div class="stat-details">
+              <span class="stat-title">YOU'LL GIVE</span>
+              <h2 class="stat-amount" id="totalPayDisplay">₹ 0</h2>
+              <span class="stat-sub"><i class="ri-time-fill"></i> To pay out / advance</span>
+            </div>
+          </div>
+
+          <!-- Card 3: Net Balance -->
+          <div class="stat-card stat-net">
+            <div class="stat-icon-wrap net-icon">
+              <i class="ri-scales-3-fill"></i>
+            </div>
+            <div class="stat-details">
+              <span class="stat-title">NET BALANCE</span>
+              <h2 class="stat-amount" id="netBalanceDisplay">₹ 0</h2>
+              <span class="stat-sub" id="netBalanceSub">Settled balance</span>
+            </div>
+          </div>
+
+          <!-- Card 4: Customer Count -->
+          <div class="stat-card stat-customers">
+            <div class="stat-icon-wrap customer-icon">
+              <i class="ri-group-fill"></i>
+            </div>
+            <div class="stat-details">
+              <span class="stat-title">TOTAL CUSTOMERS</span>
+              <h2 class="stat-amount" id="totalCustomerCountDisplay">0</h2>
+              <span class="stat-sub" id="activePartySub">Active ledger accounts</span>
+            </div>
+          </div>
+        </section>
+
+        <!-- Customer Ledger Section -->
+        <section class="customer-section" id="customersSection">
+          <div class="section-toolbar">
+            <div class="toolbar-left">
+              <h3>Recent Customer Accounts</h3>
+              <!-- Filter Tabs (Settled removed) -->
+              <div class="filter-tabs">
+                <button class="filter-chip active" data-filter="all">All (<span id="countAll">0</span>)</button>
+                <button class="filter-chip chip-receive" data-filter="receive">You'll Get (<span id="countReceive">0</span>)</button>
+                <button class="filter-chip chip-pay" data-filter="pay">You'll Give (<span id="countPay">0</span>)</button>
+              </div>
+            </div>
+
+            <div class="toolbar-right">
+              <div class="sort-wrapper">
+                <i class="ri-sort-desc"></i>
+                <select id="sortSelect" class="custom-select">
+                  <option value="recent">Most Recent</option>
+                  <option value="amount-high">Highest Amount</option>
+                  <option value="amount-low">Lowest Amount</option>
+                  <option value="name-asc">Name (A to Z)</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <!-- Customer Cards Grid -->
+          <div class="customer-list-container" id="customerListContainer">
+            <!-- Dynamic Customers will appear here -->
+          </div>
+
+          <!-- Zero Data Empty State (Shown initially when no customers exist) -->
+          <div class="empty-state" id="emptyState">
+            <div class="empty-icon-wrap">
+              <i class="ri-user-add-line"></i>
+            </div>
+            <h4>No Customers Yet</h4>
+            <p>Your ledger is completely empty. Start tracking your credits and debits by adding your first customer.</p>
+            <button class="btn btn-primary" id="emptyStateAddBtn">
+              <i class="ri-add-line"></i> Add Customer
+            </button>
+          </div>
+        </section>
+      </div>
+
+      <!-- =========================================================================
+           CUSTOMERS FULL-PAGE VIEW (EXACTLY MATCHING IMAGE 2)
+           ========================================================================= -->
+      <div class="customers-page-container" id="customersPageView" style="display: none;">
+        <!-- Breadcrumb navigation -->
+        <div class="page-breadcrumb">
+          <span>Home</span> <span class="sep">/</span> <span>Apps</span> <span class="sep">/</span> <span class="active-crumb">Customers</span>
+        </div>
+
+        <!-- Heading & Count -->
+        <div class="page-header-row">
+          <div class="page-title-box">
+            <h2>Customers</h2>
+            <p id="pageCustomerCountSubtitle">0 customers</p>
+          </div>
+        </div>
+
+        <!-- Search Bar with + Add Button (Image 2) -->
+        <div class="customers-search-bar-row">
+          <div class="full-search-box">
+            <i class="ri-search-line"></i>
+            <input type="text" id="customersPageSearchInput" placeholder="Search customers on name, email, phone, etc.">
+            <button class="clear-search-btn" id="clearPageSearchBtn" style="display: none;"><i class="ri-close-line"></i></button>
+          </div>
+          <button class="btn btn-primary btn-add-pill" id="pageAddCustomerBtn">
+            <i class="ri-add-line"></i> Add
+          </button>
+        </div>
+
+        <!-- Alphabet Grouped Table / List Box (Image 2) -->
+        <div class="customers-table-card">
+          <div class="alphabet-grouped-container" id="customersAlphabetList">
+            <!-- Dynamic A-Z customer rows -->
+          </div>
+
+          <!-- Empty state when no customers exist -->
+          <div class="empty-state" id="pageEmptyState" style="display: none;">
+            <div class="empty-icon-wrap">
+              <i class="ri-user-search-line"></i>
+            </div>
+            <h4>No Customers Found</h4>
+            <p>Add your first customer to build your ledger.</p>
+            <button class="btn btn-primary" id="pageEmptyAddBtn">
+              <i class="ri-add-line"></i> Add Customer
+            </button>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- =========================================================================
+       SCREEN / MODAL 1: CUSTOMER SELECTOR & SEARCH (MATCHING USER SCREENSHOT 1)
+       ========================================================================= -->
+  <div class="screen-overlay" id="customerSearchScreen">
+    <div class="mobile-window">
+      <!-- Blue Header with Back Arrow -->
+      <div class="screen-header-blue">
+        <button class="btn-icon-white" id="closeSearchScreenBtn" title="Back">
+          <i class="ri-arrow-left-line"></i>
+        </button>
+        <span class="screen-header-title">Select Customer</span>
+      </div>
+
+      <!-- Search Input Container -->
+      <div class="search-bar-wrapper">
+        <div class="screen-search-box">
+          <input type="text" id="screenSearchInput" placeholder="Customer name" autocomplete="off" autofocus>
+          <button class="screen-search-clear" id="screenSearchClear" style="display: none;" title="Clear">
+            <i class="ri-close-fill"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Dashed "Add Customer" Row (Exactly as in Screenshot 1) -->
+      <div class="add-customer-action-row" id="triggerAddPartyFormBtn">
+        <div class="dashed-plus-circle">
+          <i class="ri-add-line"></i>
+        </div>
+        <span class="action-text">Add Customer</span>
+        <i class="ri-arrow-right-s-line action-arrow"></i>
+      </div>
+
+      <!-- Customer List with Alphabet Index Scrubber -->
+      <div class="screen-list-wrapper">
+        <div class="screen-customer-list" id="screenCustomerList">
+          <!-- Dynamically populated or clean zero state -->
+        </div>
+
+        <!-- Alphabet A-Z Bar -->
+        <div class="alphabet-scrubber" id="alphabetScrubber">
+          <span>A</span><span>B</span><span>C</span><span>D</span><span>E</span>
+          <span>F</span><span>G</span><span>H</span><span>I</span><span>J</span>
+          <span>K</span><span>L</span><span>M</span><span>N</span><span>O</span>
+          <span>P</span><span>Q</span><span>R</span><span>S</span><span>T</span>
+          <span>U</span><span>V</span><span>W</span><span>X</span><span>Y</span>
+          <span>Z</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       SCREEN / MODAL 2: ADD CUSTOMER FORM (EXACTLY MATCHING USER SCREENSHOT 2)
+       ========================================================================= -->
+  <div class="screen-overlay" id="addPartyScreen">
+    <div class="mobile-window">
+      <!-- Blue Header with Back Arrow and "Add Customer" title -->
+      <div class="screen-header-blue">
+        <button class="btn-icon-white" id="backToAddSearchBtn" title="Back">
+          <i class="ri-arrow-left-line"></i>
+        </button>
+        <span class="screen-header-title">Add Customer</span>
+      </div>
+
+      <!-- Form Body -->
+      <form id="addPartyForm" class="add-party-body">
+        
+        <!-- Customer Name Input -->
+        <div class="party-form-group">
+          <div class="outlined-input-wrap">
+            <input type="text" id="partyNameInput" placeholder="Customer name" required autofocus>
+          </div>
+        </div>
+
+        <!-- Mobile Number with Flag and +91 box -->
+        <div class="party-phone-row">
+          <div class="flag-prefix-box">
+            <svg class="india-flag-svg" viewBox="0 0 30 20" width="22" height="15">
+              <rect width="30" height="6.67" fill="#FF9933"/>
+              <rect y="6.67" width="30" height="6.67" fill="#FFFFFF"/>
+              <rect y="13.33" width="30" height="6.67" fill="#138808"/>
+              <circle cx="15" cy="10" r="2.5" fill="#000080"/>
+            </svg>
+            <span class="code">+91</span>
+          </div>
+          <div class="phone-input-box">
+            <input type="tel" id="partyPhoneInput" placeholder="Mobile Number" pattern="[0-9]{10}" maxlength="10" required>
+          </div>
+        </div>
+
+        <!-- Who are they? Customer or Supplier -->
+        <div class="party-type-section">
+          <span class="party-type-label">Who are they?</span>
+          <div class="party-radio-group">
+            <label class="radio-label">
+              <input type="radio" name="partyType" value="Customer" checked>
+              <span class="custom-radio-dot"></span>
+              <span>Customer</span>
+            </label>
+            <label class="radio-label">
+              <input type="radio" name="partyType" value="Supplier">
+              <span class="custom-radio-dot"></span>
+              <span>Supplier</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- + ADD GSTIN & ADDRESS (OPTIONAL) Toggle -->
+        <div class="accordion-toggle-wrap">
+          <button type="button" class="btn-accordion-toggle" id="toggleGstAddressBtn">
+            <span id="accordionToggleIcon">+</span> ADD GSTIN &amp; ADDRESS (OPTIONAL)
+          </button>
+        </div>
+
+        <!-- Collapsible GSTIN & Address Form -->
+        <div class="collapsible-gst-address" id="gstAddressSection" style="display: none;">
+          <div class="party-form-group">
+            <label class="input-sub-label">GSTIN Number</label>
+            <div class="outlined-input-wrap">
+              <input type="text" id="partyGstinInput" placeholder="e.g. 24AAAAA0000A1Z5" maxlength="15" style="text-transform: uppercase;">
+            </div>
+          </div>
+
+          <div class="party-form-group">
+            <label class="input-sub-label">Building / Flat / Shop No.</label>
+            <div class="outlined-input-wrap">
+              <input type="text" id="partyBuildingInput" placeholder="Flat, House no., Building, Company">
+            </div>
+          </div>
+
+          <div class="party-form-group">
+            <label class="input-sub-label">Area / Street / City</label>
+            <div class="outlined-input-wrap">
+              <input type="text" id="partyAreaInput" placeholder="Area, Colony, Street, City">
+            </div>
+          </div>
+
+          <div class="party-form-group">
+            <label class="input-sub-label">PIN Code</label>
+            <div class="outlined-input-wrap">
+              <input type="text" id="partyPincodeInput" placeholder="6-digit PIN code" maxlength="6">
+            </div>
+          </div>
+        </div>
+
+        <!-- Spacer for comfortable scroll -->
+        <div style="height: 30px;"></div>
+
+        <!-- Bottom Action Button: ADD CUSTOMER -->
+        <div class="bottom-button-bar">
+          <button type="submit" class="btn-solid-blue" id="submitAddPartyBtn">
+            ADD CUSTOMER
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       MODAL 3: CUSTOMER DETAIL & TRANSACTION LEDGER
+       ========================================================================= -->
+  <div class="screen-overlay" id="customerDetailModal">
+    <div class="mobile-window modal-wide">
+      <div class="screen-header-blue detail-header">
+        <div class="detail-header-left">
+          <button class="btn-icon-white" id="closeDetailModalBtn" title="Back">
+            <i class="ri-arrow-left-line"></i>
+          </button>
+          <div class="customer-badge-info">
+            <h3 id="detailCustomerName">Customer Name</h3>
+            <span id="detailCustomerPhone">+91 0000000000</span>
+          </div>
+        </div>
+        <div class="detail-header-actions">
+          <button class="btn-icon-white" id="printCustomerLedgerBtn" title="Print Customer Statement">
+            <i class="ri-printer-line"></i>
+          </button>
+          <button class="btn-icon-white" id="toggleFsDetailBtn" title="Toggle Fullscreen">
+            <i class="ri-fullscreen-line" id="fsIconDetail"></i>
+          </button>
+          <button class="btn-icon-white" id="quickWhatsAppBtn" title="Send WhatsApp Reminder">
+            <i class="ri-whatsapp-line"></i>
+          </button>
+          <button class="btn-icon-white" id="deleteCustomerBtn" title="Delete Customer">
+            <i class="ri-delete-bin-line"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Net Balance Highlight Box -->
+      <div class="detail-balance-banner">
+        <div>
+          <span class="detail-balance-label">Net Outstanding Balance</span>
+          <h2 id="detailBalanceAmount" class="detail-balance-val">₹ 0</h2>
+        </div>
+        <span class="detail-balance-tag" id="detailBalanceTag">Settled</span>
+      </div>
+
+      <!-- Action Buttons: GAVE (-) vs GOT (+) -->
+      <div class="detail-quick-actions">
+        <button class="btn-action-gave" id="btnCustomerGave">
+          <i class="ri-arrow-up-circle-fill"></i>
+          <span>YOU GAVE ₹</span>
+        </button>
+        <button class="btn-action-got" id="btnCustomerGot">
+          <i class="ri-arrow-down-circle-fill"></i>
+          <span>YOU GOT ₹</span>
+        </button>
+      </div>
+
+      <!-- Transaction Entries List -->
+      <div class="transaction-history-box">
+        <div class="history-title-bar">
+          <div class="history-title-left">
+            <h4>Transaction Ledger</h4>
+            <span id="detailTxnCount">0 Entries</span>
+          </div>
+          <button class="btn-ledger-print" id="printCustomerLedgerBtn2" title="Print Customer Statement">
+            <i class="ri-printer-line"></i> Print Statement
+          </button>
+        </div>
+        <div class="transaction-list" id="detailTransactionList">
+          <!-- Dynamic transaction rows -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       MODAL 4: RECORD TRANSACTION (YOU GAVE / YOU GOT)
+       ========================================================================= -->
+  <div class="screen-overlay" id="transactionModal">
+    <div class="mobile-window modal-compact">
+      <div class="screen-header-blue" id="txnHeaderBlue">
+        <button class="btn-icon-white" id="closeTxnModalBtn" title="Back">
+          <i class="ri-arrow-left-line"></i>
+        </button>
+        <span class="screen-header-title" id="txnModalTitle">Add Entry</span>
+      </div>
+
+      <form id="recordTxnForm" class="txn-form-body">
+        <input type="hidden" id="txnDirectionInput" value="give">
+
+        <div class="party-form-group">
+          <label class="input-sub-label">Amount (₹) *</label>
+          <div class="amount-big-wrap">
+            <span class="currency-prefix">₹</span>
+            <input type="number" id="txnAmountInput" placeholder="0" min="1" step="any" required autofocus>
+          </div>
+        </div>
+
+        <div class="party-form-group">
+          <label class="input-sub-label">Description / Note</label>
+          <div class="outlined-input-wrap">
+            <input type="text" id="txnNoteInput" placeholder="e.g. Goods purchased, Cash received, UPI">
+          </div>
+        </div>
+
+        <div class="party-form-group">
+          <label class="input-sub-label">Date</label>
+          <div class="outlined-input-wrap">
+            <input type="date" id="txnDateInput" required>
+          </div>
+        </div>
+
+        <div style="height: 20px;"></div>
+
+        <button type="submit" class="btn-solid-blue" id="txnSubmitBtn">
+          SAVE ENTRY
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       MODAL 5: PRINTABLE LEDGER REPORT & DAYBOOK
+       ========================================================================= -->
+  <div class="screen-overlay" id="reportModal">
+    <div class="mobile-window modal-wide">
+      <div class="screen-header-blue">
+        <button class="btn-icon-white" id="closeReportBtn" title="Back">
+          <i class="ri-arrow-left-line"></i>
+        </button>
+        <span class="screen-header-title">My Book Digital Ledger Report</span>
+        <button class="btn-icon-white" id="toggleFsReportBtn" title="Toggle Fullscreen" style="margin-left: auto;">
+          <i class="ri-fullscreen-line" id="fsIconReport"></i>
+        </button>
+      </div>
+
+      <div class="report-container">
+        <!-- Header with Controls and Customer Filter -->
+        <div class="report-header">
+          <div>
+            <h2 id="reportBusinessTitle">My Business - Ledger Statement</h2>
+            <p id="reportDateTime">Generated on: </p>
+          </div>
+          <div class="report-controls-group">
+            <div class="report-filter-item">
+              <label for="reportPartySelect"><i class="ri-user-search-line"></i> Customer:</label>
+              <select id="reportPartySelect" class="custom-select report-select">
+                <option value="all">All Customers / Parties</option>
+              </select>
+            </div>
+            <div class="report-view-switcher">
+              <button class="view-switch-btn active" id="btnReportViewTxns" data-mode="txns">
+                <i class="ri-file-list-3-line"></i> Ledger Entries
+              </button>
+              <button class="view-switch-btn" id="btnReportViewSummary" data-mode="summary">
+                <i class="ri-group-line"></i> Party Balances
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- KPI Summary Cards -->
+        <div class="report-kpi-summary">
+          <div class="rep-box">
+            <span>Total You'll Get</span>
+            <strong id="repTotalReceive" style="color: #059669;">₹ 0</strong>
+          </div>
+          <div class="rep-box">
+            <span>Total You'll Give</span>
+            <strong id="repTotalPay" style="color: #dc2626;">₹ 0</strong>
+          </div>
+          <div class="rep-box">
+            <span>Net Balance</span>
+            <strong id="repNetBalance" style="color: #2563eb;">₹ 0</strong>
+          </div>
+          <div class="rep-box">
+            <span>Total Entries</span>
+            <strong id="repTotalEntries" style="color: #475569;">0</strong>
+          </div>
+        </div>
+
+        <!-- Table 1: Full Transactions Ledger (Default) -->
+        <div id="reportTxnTableWrap" style="overflow-x: auto; flex: 1;">
+          <table class="report-table">
+            <thead>
+              <tr>
+                <th style="width: 35px;">#</th>
+                <th style="width: 105px;">Date</th>
+                <th>Customer / Party</th>
+                <th>Description / Note</th>
+                <th style="text-align: right; width: 125px; color: #dc2626;">You Gave (-)</th>
+                <th style="text-align: right; width: 125px; color: #059669;">You Got (+)</th>
+                <th style="text-align: right; width: 125px;">Balance (₹)</th>
+              </tr>
+            </thead>
+            <tbody id="reportTxnTableBody">
+              <!-- Dynamic transaction rows populated by JS -->
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Table 2: Customer Summary Table -->
+        <div id="reportSummaryTableWrap" style="display: none; overflow-x: auto; flex: 1;">
+          <table class="report-table">
+            <thead>
+              <tr>
+                <th style="width: 35px;">#</th>
+                <th>Customer / Party</th>
+                <th>Phone</th>
+                <th>Type</th>
+                <th>Status</th>
+                <th style="text-align: right;">Net Balance (₹)</th>
+              </tr>
+            </thead>
+            <tbody id="reportTableBody">
+              <!-- Dynamic customer summary rows -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="report-footer-actions">
+        <button class="btn btn-outline" id="closeReportFooterBtn">Close</button>
+        <button class="btn btn-primary" id="printLedgerReportBtn">
+          <i class="ri-printer-line"></i> Print / Save as PDF
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Dedicated Customer Ledger Printable Statement (Matches single customer ledger) -->
+  <div id="printableCustomerStatement" class="print-statement-area">
+    <div class="print-statement-header">
+      <div class="print-brand-info">
+        <h2 id="printShopTitle">My Business</h2>
+        <p>Customer Ledger Account Statement</p>
+      </div>
+      <div class="print-date-info">
+        <p id="printStmtDate">Date: DD-MM-YYYY</p>
+      </div>
+    </div>
+
+    <div class="print-meta-grid">
+      <div class="meta-item">
+        <span>Party / Customer Name:</span>
+        <strong id="printPartyName">-</strong>
+      </div>
+      <div class="meta-item">
+        <span>Mobile Number:</span>
+        <strong id="printPartyPhone">-</strong>
+      </div>
+      <div class="meta-item">
+        <span>Party Type:</span>
+        <strong id="printPartyType">Customer</strong>
+      </div>
+      <div class="meta-item">
+        <span>Net Balance:</span>
+        <strong id="printPartyNetBalance" style="font-size: 17px;">₹ 0</strong>
+      </div>
+    </div>
+
+    <table class="print-statement-table">
+      <thead>
+        <tr>
+          <th style="width: 35px;">#</th>
+          <th style="width: 110px;">Date</th>
+          <th>Description / Note</th>
+          <th style="text-align: right; width: 130px; color: #dc2626;">You Gave (-)</th>
+          <th style="text-align: right; width: 130px; color: #059669;">You Got (+)</th>
+          <th style="text-align: right; width: 130px;">Balance (₹)</th>
+        </tr>
+      </thead>
+      <tbody id="printTxnTableBody">
+        <!-- Dynamic rows populated when printing -->
+      </tbody>
+      <tfoot>
+        <tr class="print-total-row">
+          <td colspan="3" style="font-weight: 700;">TOTALS</td>
+          <td style="text-align: right; font-weight: 800; color: #dc2626;" id="printTotalGave">₹ 0</td>
+          <td style="text-align: right; font-weight: 800; color: #059669;" id="printTotalGot">₹ 0</td>
+          <td style="text-align: right; font-weight: 800;" id="printFinalNet">₹ 0</td>
+        </tr>
+      </tfoot>
+    </table>
+
+    <div class="print-statement-notice">
+      <p>This statement is an accurate reflection of all recorded transactions in the My Book digital ledger.</p>
+      <p>Thank you for your business!</p>
+    </div>
+  </div>
+
+  <!-- Dedicated General Ledger Report Printable Area -->
+  <div id="printableLedgerReport" class="print-statement-area">
+    <div class="print-statement-header">
+      <div class="print-brand-info">
+        <h2 id="printLedgerBusinessTitle">My Business</h2>
+        <p id="printLedgerReportSubtitle">Digital Business Ledger Statement</p>
+      </div>
+      <div class="print-date-info">
+        <p id="printLedgerGeneratedDate">Date: DD-MM-YYYY</p>
+        <p id="printLedgerFilterScope">Scope: All Customers</p>
+      </div>
+    </div>
+
+    <div class="print-meta-grid">
+      <div class="meta-item">
+        <span>Report Scope:</span>
+        <strong id="printLedgerScopeLabel">All Customers / Parties</strong>
+      </div>
+      <div class="meta-item">
+        <span>Total You Gave (-):</span>
+        <strong id="printLedgerTotalGave" style="color: #dc2626;">₹ 0</strong>
+      </div>
+      <div class="meta-item">
+        <span>Total You Got (+):</span>
+        <strong id="printLedgerTotalGot" style="color: #059669;">₹ 0</strong>
+      </div>
+      <div class="meta-item">
+        <span>Net Outstanding:</span>
+        <strong id="printLedgerNetBalance" style="font-size: 16px; color: #2563eb;">₹ 0</strong>
+      </div>
+    </div>
+
+    <table class="print-statement-table">
+      <thead>
+        <tr>
+          <th style="width: 35px;">#</th>
+          <th style="width: 105px;">Date</th>
+          <th style="width: 160px;">Customer / Party</th>
+          <th>Description / Note</th>
+          <th style="text-align: right; width: 120px; color: #dc2626;">You Gave (-)</th>
+          <th style="text-align: right; width: 120px; color: #059669;">You Got (+)</th>
+          <th style="text-align: right; width: 120px;">Balance (₹)</th>
+        </tr>
+      </thead>
+      <tbody id="printLedgerTableBody">
+        <!-- Dynamic rows populated when printing -->
+      </tbody>
+      <tfoot>
+        <tr class="print-total-row">
+          <td colspan="4" style="font-weight: 700;">TOTALS</td>
+          <td style="text-align: right; font-weight: 800; color: #dc2626;" id="printLedgerFooterGave">₹ 0</td>
+          <td style="text-align: right; font-weight: 800; color: #059669;" id="printLedgerFooterGot">₹ 0</td>
+          <td style="text-align: right; font-weight: 800;" id="printLedgerFooterNet">₹ 0</td>
+        </tr>
+      </tfoot>
+    </table>
+
+    <div class="print-statement-notice">
+      <p>This statement represents an official financial record from My Book digital ledger system.</p>
+      <p>Generated automatically • 100% Verified Offline Entries</p>
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       MODAL 6: DATA SYNC & MULTI-DEVICE BACKUP
+       ========================================================================= -->
+  <div class="screen-overlay" id="backupModal">
+    <div class="mobile-window modal-wide">
+      <div class="screen-header-blue">
+        <button class="btn-icon-white" id="closeBackupBtn" title="Back">
+          <i class="ri-arrow-left-line"></i>
+        </button>
+        <span class="screen-header-title">Multi-Device Data Sync &amp; Backup</span>
+      </div>
+
+      <div class="backup-modal-content">
+        <!-- Banner explanation -->
+        <div class="sync-info-banner">
+          <div class="sync-banner-icon">
+            <i class="ri-smartphone-line"></i>
+            <i class="ri-arrow-left-right-line"></i>
+            <i class="ri-computer-line"></i>
+          </div>
+          <div>
+            <h3>Same Data on Different Devices</h3>
+            <p>Because My Book runs fast and private in your browser, data is stored locally. Use the options below to sync your ledger across multiple phones, laptops, and PCs:</p>
+          </div>
+        </div>
+
+        <!-- 2 Clear Options -->
+        <div class="sync-options-grid">
+          <!-- Option 1: Instant File Export / Import -->
+          <div class="sync-option-card highlighted">
+            <div class="sync-card-badge">Instant &amp; 100% Free</div>
+            <div class="sync-card-header">
+              <div class="sync-card-icon"><i class="ri-download-cloud-2-line"></i></div>
+              <div>
+                <h4>1-Click Backup File (Export / Import)</h4>
+                <p>Transfer data to any phone, laptop, or tablet in 5 seconds without internet.</p>
+              </div>
+            </div>
+
+            <div class="sync-actions-row">
+              <button type="button" class="btn-sync-action btn-export" id="exportDataBtn">
+                <i class="ri-download-2-line"></i>
+                <div class="btn-sync-text">
+                  <strong>Export / Download Backup</strong>
+                  <span>Save .json file to send via WhatsApp, Drive, or Email</span>
+                </div>
+              </button>
+
+              <button type="button" class="btn-sync-action btn-import" id="importDataTriggerBtn">
+                <i class="ri-upload-2-line"></i>
+                <div class="btn-sync-text">
+                  <strong>Import / Restore on This Device</strong>
+                  <span>Select backup file from your other device to load all data</span>
+                </div>
+              </button>
+              <input type="file" id="importFileInput" accept=".json" style="display: none;">
+            </div>
+          </div>
+
+          <!-- Option 2: Automatic Cloud Sync (Firebase / Server) -->
+          <div class="sync-option-card">
+            <div class="sync-card-badge cloud">Automatic Live Sync</div>
+            <div class="sync-card-header">
+              <div class="sync-card-icon cloud"><i class="ri-cloud-line"></i></div>
+              <div>
+                <h4>Automatic Real-Time Cloud Sync</h4>
+                <p>Connect a shared cloud database so multiple devices sync automatically without files.</p>
+              </div>
+            </div>
+
+            <div class="cloud-steps-list">
+              <div class="cloud-step">
+                <span class="step-num">1</span>
+                <span>Both your phone &amp; PC connect to a secure cloud database (e.g. Firebase Firestore).</span>
+              </div>
+              <div class="cloud-step">
+                <span class="step-num">2</span>
+                <span>Whenever you enter a transaction on mobile, it immediately updates on your PC in real-time.</span>
+              </div>
+            </div>
+            
+            <div class="cloud-status-box">
+              <i class="ri-information-line"></i>
+              <span>Currently using secure <strong>Offline Local Storage</strong>. If you would like automatic real-time cloud sync configured, let us know and we can integrate Firebase!</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification Container -->
+  <div class="toast-container" id="toastContainer"></div>
+
+  <!-- JavaScript -->
+  <script src="app.js"></script>
+</body>
+</html>
