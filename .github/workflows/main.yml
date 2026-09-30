@@ -25,16 +25,16 @@ jobs:
           cp -f app-logo.png icon-192.png icon-512.png www/ 2>/dev/null || true
           ls -la www
 
-      - name: Install NPM Dependencies
+      - name: Install Dependencies
         run: npm install
 
-      - name: Generate Fresh iOS Native Project
+      - name: Generate Clean iOS Native Project
         run: |
           rm -rf ios
           npx cap add ios
           npx cap sync ios
 
-      - name: Compile Xcode Project (Release)
+      - name: Compile iOS App with Xcode
         run: |
           cd ios/App
           xcodebuild -project App.xcodeproj \
